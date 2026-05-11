@@ -1,0 +1,72 @@
+---
+/**
+ * BACS Labs · Hero
+ *
+ * Üst bölüm — problem + pozisyonlama.
+ * Static, zero-JS.
+ */
+---
+
+<section class="border-b border-[var(--color-border-default)] bg-[var(--color-bg-base)] py-20 lg:py-28">
+  <div class="mx-auto max-w-6xl px-6">
+    <!-- Wordmark -->
+    <div class="mb-12 flex items-center gap-2">
+      <span class="font-mono text-xs uppercase tracking-[0.3em] text-[var(--color-accent)]">
+        {'{ }'}
+      </span>
+      <span class="text-xl font-extrabold tracking-tighter text-[var(--color-text-primary)]">
+        BACS
+      </span>
+      <span class="text-xs uppercase tracking-[0.2em] text-[var(--color-accent)]">
+        // labs
+      </span>
+    </div>
+
+    <!-- Eyebrow -->
+    <div class="mb-6 flex items-center gap-3">
+      <span class="h-px w-12 bg-[var(--color-accent)]"></span>
+      <span class="font-mono text-xs uppercase tracking-[0.3em] text-[var(--color-text-muted)]">
+        Case 01 · Vehicle-Aware Routing
+      </span>
+    </div>
+
+    <!-- Headline -->
+    <h1 class="max-w-4xl text-4xl font-semibold leading-[1.1] tracking-tight text-[var(--color-text-primary)] md:text-5xl lg:text-6xl">
+      Türkiye'de spot araç fiyatı,
+      <span class="text-[var(--color-accent)]">"kaç kilometre × kaç TL"</span>
+      değildir.
+    </h1>
+
+    <!-- Sub -->
+    <p class="mt-6 max-w-3xl text-lg leading-relaxed text-[var(--color-text-secondary)] md:text-xl">
+      Köprü sınıfı, yön bazlı waypoint mimarisi, KGM 2026 tarife matrisi,
+      akaryakıt eskalasyonu — 8 araç sınıfı için ayrı hesap.
+      <span class="text-[var(--color-text-primary)]">Manuel yapamayacağın bir denklem.</span>
+    </p>
+
+    <!-- Metrics -->
+    <div class="mt-12 grid max-w-3xl gap-4 sm:grid-cols-3">
+      <div class="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-5">
+        <div class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">Köprü</div>
+        <div class="mt-1 font-mono text-3xl font-semibold text-[var(--color-text-primary)]">5</div>
+        <div class="mt-1 text-xs text-[var(--color-text-secondary)]">× 5 sınıf tarifesi</div>
+      </div>
+      <div class="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-5">
+        <div class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">Koridor</div>
+        <div class="mt-1 font-mono text-3xl font-semibold text-[var(--color-text-primary)]">11</div>
+        <div class="mt-1 text-xs text-[var(--color-text-secondary)]">KGM resmi otoyolu</div>
+      </div>
+      <div class="rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-elevated)] p-5">
+        <div class="text-xs uppercase tracking-widest text-[var(--color-text-muted)]">Araç sınıfı</div>
+        <div class="mt-1 font-mono text-3xl font-semibold text-[var(--color-text-primary)]">8</div>
+        <div class="mt-1 text-xs text-[var(--color-text-secondary)]">× 7 case rota profili</div>
+      </div>
+    </div>
+
+    <!-- Scroll cue -->
+    <div class="mt-14 flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+      <span>Aşağıda canlı motor</span>
+      <span class="text-[var(--color-accent)]">↓</span>
+    </div>
+  </div>
+</section>

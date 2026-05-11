@@ -1,0 +1,414 @@
+---
+/**
+ * BACS Labs · AlgoPanel
+ *
+ * "Algoritma içeriden" — 5 collapsible bölüm.
+ * Pure HTML <details> kullanır, zero-JS.
+ */
+---
+
+<section class="border-y border-[var(--color-border-default)] bg-[var(--color-bg-base)] py-16 lg:py-24">
+  <div class="mx-auto max-w-7xl px-6">
+    <!-- Section header -->
+    <div class="mb-10 max-w-3xl">
+      <div class="mb-3 flex items-center gap-3">
+        <span class="h-px w-12 bg-[var(--color-accent)]"></span>
+        <span class="font-mono text-xs uppercase tracking-[0.3em] text-[var(--color-text-muted)]">
+          Algoritma İçeriden
+        </span>
+      </div>
+      <h2 class="text-2xl font-semibold text-[var(--color-text-primary)] md:text-3xl">
+        Neyin <em class="not-italic text-[var(--color-accent)]">nasıl</em> hesaplandığı.
+      </h2>
+      <p class="mt-2 text-sm text-[var(--color-text-secondary)]">
+        Standart routing API'leri köprü sınıfını bilmez. Excel bu denklemi çözemez.
+        Aşağıda engine'in 5 katmanı — her birinin verisi ve mantığı açık.
+      </p>
+    </div>
+
+    <div class="space-y-3">
+      <!-- 01 ─── FSM/YSS yön bazlı waypoint -->
+      <details class="algo-card">
+        <summary class="algo-summary">
+          <span class="algo-num">01</span>
+          <h3 class="algo-title">FSM/YSS yön bazlı waypoint sistemi</h3>
+          <span class="algo-plus">+</span>
+        </summary>
+        <div class="algo-body">
+          <p class="algo-lead">
+            Her köprünün iki şeridi farklı koordinatta. Routing motoruna sadece "FSM" demek yetmez —
+            <span class="hl">Asya→Avrupa</span> veya <span class="hl">Avrupa→Asya</span> şeridinin koordinatı
+            ayrı verilmeli; aksi halde rota yanlış tarafa düşer ve köprüyü atlar.
+          </p>
+          <div class="algo-table-wrap">
+            <table class="algo-table">
+              <thead>
+                <tr>
+                  <th>Köprü</th><th>Yön</th><th>Latitude</th><th>Longitude</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="hl">FSM</td><td>Asya → Avrupa</td><td>41.0914417</td><td>29.0618725</td></tr>
+                <tr><td class="hl">FSM</td><td>Avrupa → Asya</td><td>41.0912375</td><td>29.0617078</td></tr>
+                <tr><td class="hl">YSS</td><td>Asya → Avrupa</td><td>41.2030227</td><td>29.1123462</td></tr>
+                <tr><td class="hl">YSS</td><td>Avrupa → Asya</td><td>41.2034521</td><td>29.1106269</td></tr>
+                <tr><td class="hl">Osmangazi</td><td>Çift yön</td><td>40.7555839</td><td>29.5159248</td></tr>
+                <tr><td class="hl">1915 Çanakkale</td><td>Doğu / Batı</td><td>40.2510 / 40.2520</td><td>26.6210 / 26.6220</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="algo-callout">
+            <span class="callout-arrow">→</span> Yön tespiti
+            <code>planChain.direction</code> (forward / reverse)'tan gelir; long-haul rotalar için en güvenilir kaynak.
+          </div>
+        </div>
+      </details>
+
+      <!-- 02 ─── Vehicle bridge class -->
+      <details class="algo-card">
+        <summary class="algo-summary">
+          <span class="algo-num">02</span>
+          <h3 class="algo-title">8 araç sınıfı × köprü zorunluluğu</h3>
+          <span class="algo-plus">+</span>
+        </summary>
+        <div class="algo-body">
+          <p class="algo-lead">
+            UKOME ve KGM yönetmeliği: <span class="hl">1.-2. sınıf</span> hafif vasıtalar FSM kullanabilir;
+            <span class="hl">3.-5. sınıf</span> ağır vasıtalar (kamyon/TIR) <span class="hl-yss">YSS</span>'den geçmek
+            <em>zorunda</em>. Yanlış araç eşlemesi → ücret yanlış hesaplanır.
+          </p>
+          <div class="algo-table-wrap">
+            <table class="algo-table">
+              <thead>
+                <tr><th>Araç</th><th>KGM Sınıf</th><th>Boğaz</th><th class="num">₺/km fallback</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="hl">Minivan</td><td>1.</td><td><span class="badge badge-fsm">FSM</span></td><td class="num">0,90</td></tr>
+                <tr><td class="hl">Panelvan 3,5-5t</td><td>2.</td><td><span class="badge badge-fsm">FSM</span></td><td class="num">1,05</td></tr>
+                <tr><td class="hl">Panelvan 5-7,5t · Kamyonet</td><td>2.</td><td><span class="badge badge-fsm">FSM</span></td><td class="num">1,05</td></tr>
+                <tr><td class="hl">Panelvan 5-7,5t · Kamyon</td><td>3.</td><td><span class="badge badge-yss">YSS</span></td><td class="num">1,35</td></tr>
+                <tr><td class="hl">Kamyon 7,5-12t</td><td>3.</td><td><span class="badge badge-yss">YSS</span></td><td class="num">1,35</td></tr>
+                <tr><td class="hl">Onteker 10-15t</td><td>3.</td><td><span class="badge badge-yss">YSS</span></td><td class="num">1,35</td></tr>
+                <tr><td class="hl">Kırkayak 15-20t</td><td>4.</td><td><span class="badge badge-yss">YSS</span></td><td class="num">1,75</td></tr>
+                <tr><td class="hl">TIR 22-26t</td><td>5.</td><td><span class="badge badge-yss">YSS</span></td><td class="num">2,15</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <!-- 03 ─── KGM 2026 tarife matrisi -->
+      <details class="algo-card">
+        <summary class="algo-summary">
+          <span class="algo-num">03</span>
+          <h3 class="algo-title">KGM 2026 köprü tarifesi (₺, KDV dahil)</h3>
+          <span class="algo-plus">+</span>
+        </summary>
+        <div class="algo-body">
+          <p class="algo-lead">
+            Sınıf × köprü matrisi. Aynı köprü için 1. sınıf ve 5. sınıf arasında <span class="hl">12,5×</span>
+            fark olabilir. Yanlış sınıflandırma → ihale veya teklif başarısız.
+          </p>
+          <div class="algo-table-wrap">
+            <table class="algo-table">
+              <thead>
+                <tr><th>Köprü</th><th class="num">1.</th><th class="num">2.</th><th class="num">3.</th><th class="num">4.</th><th class="num">5.</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="hl">15 Temmuz Şehitler</td><td class="num">59</td><td class="num muted">—</td><td class="num muted">—</td><td class="num muted">—</td><td class="num muted">—</td></tr>
+                <tr><td class="hl">FSM</td><td class="num">59</td><td class="num">75</td><td class="num muted">—</td><td class="num muted">—</td><td class="num muted">—</td></tr>
+                <tr><td class="hl">YSS</td><td class="num">95</td><td class="num">125</td><td class="num">235</td><td class="num">595</td><td class="num">740</td></tr>
+                <tr><td class="hl">Osmangazi</td><td class="num">995</td><td class="num">1.590</td><td class="num">1.890</td><td class="num">2.505</td><td class="num">3.165</td></tr>
+                <tr><td class="hl">1915 Çanakkale</td><td class="num">995</td><td class="num">1.245</td><td class="num">2.240</td><td class="num">2.490</td><td class="num">3.755</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="algo-callout">
+            <span class="callout-arrow">+</span> 11 resmi KGM otoyolu (Çamlıca-Akıncı, Mahmutbey-Edirne, Çukurova hatları, vs.)
+            için tam-hat ücreti ayrı tabloda; engine kaynak kodunda.
+          </div>
+        </div>
+      </details>
+
+      <!-- 04 ─── 7 case route profiles -->
+      <details class="algo-card">
+        <summary class="algo-summary">
+          <span class="algo-num">04</span>
+          <h3 class="algo-title">7 case rota profili & multi-bridge zinciri</h3>
+          <span class="algo-plus">+</span>
+        </summary>
+        <div class="algo-body">
+          <p class="algo-lead">
+            Tek bir koridor yeterli değil. Bursa → Edirne rotası
+            <span class="hl">Osmangazi + YSS</span> ister; engine bu zinciri otomatik kurar.
+          </p>
+          <div class="case-rows">
+            <div class="case-row"><span class="case-num">01</span><span class="case-route">Güney Marmara → Avrupa</span><span class="case-chain">Osmangazi (reverse) + YSS (reverse)</span></div>
+            <div class="case-row"><span class="case-num">02</span><span class="case-route">Avrupa → Güney Marmara</span><span class="case-chain">YSS (forward) + Osmangazi (forward)</span></div>
+            <div class="case-row"><span class="case-num">03</span><span class="case-route">Anadolu → Çanakkale</span><span class="case-chain">YSS (reverse) + Çanakkale (forward)</span></div>
+            <div class="case-row"><span class="case-num">04</span><span class="case-route">Çanakkale → Anadolu</span><span class="case-chain">Çanakkale (reverse) + YSS (forward)</span></div>
+            <div class="case-row"><span class="case-num">05</span><span class="case-route">Trakya ↔ Batı Anadolu/Ege</span><span class="case-chain">1915 Çanakkale tek köprü</span></div>
+            <div class="case-row"><span class="case-num">06</span><span class="case-route">Marmara ↔ Güney Marmara</span><span class="case-chain">Osmangazi tek köprü</span></div>
+            <div class="case-row"><span class="case-num">07</span><span class="case-route">Şehir içi Boğaz transit</span><span class="case-chain">FSM (1.-2. sınıf) veya YSS (3.-5. sınıf)</span></div>
+          </div>
+        </div>
+      </details>
+
+      <!-- 05 ─── Fuel + escalation price engine -->
+      <details class="algo-card">
+        <summary class="algo-summary">
+          <span class="algo-num">05</span>
+          <h3 class="algo-title">Akaryakıt + eskalasyon fiyat motoru</h3>
+          <span class="algo-plus">+</span>
+        </summary>
+        <div class="algo-body">
+          <p class="algo-lead">
+            İki ipucu — akaryakıt-bazlı ve eskalasyon-bazlı —
+            <span class="hl">500'e yuvarlanmış band</span> haline getirilir. Pazarda konuşulabilir, müzakere edilebilir aralık.
+          </p>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div class="formula-card">
+              <div class="formula-eyebrow">Akaryakıt-bazlı</div>
+              <pre class="formula-code">fuel = avgConsumption × km / 100 × ₺/L
+quote = fuel / fuelShare</pre>
+              <div class="formula-note">
+                fuelShare: Minivan 0,44 → TIR 0,38 (sınıf büyüdükçe yakıt payı düşer)
+              </div>
+            </div>
+            <div class="formula-card">
+              <div class="formula-eyebrow">Eskalasyon-bazlı</div>
+              <pre class="formula-code">quote = max(km × ₺/km, minFloor)
+₺/km: Minivan 11,5 → TIR 47,0</pre>
+              <div class="formula-note">
+                minFloor: kısa mesafelerde alt taban (Minivan 1.500 ₺ → TIR 10.500 ₺)
+              </div>
+            </div>
+          </div>
+          <div class="algo-callout accent">
+            <span class="callout-arrow">→</span> Aralık formülü:
+            <code>alt = (akaryakıt × 0,40) + (eskalasyon × 0,60)</code>, aşağı 500.
+            <code>üst = (akaryakıt × 0,45) + (eskalasyon × 0,55)</code>, yukarı 500.
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Card */
+  .algo-card {
+    border: 1px solid var(--color-border-default);
+    background: var(--color-bg-elevated);
+    border-radius: 0.75rem;
+    transition: border-color 0.15s ease;
+  }
+  .algo-card:hover {
+    border-color: var(--color-border-strong);
+  }
+  .algo-card[open] {
+    border-color: rgba(99, 102, 241, 0.4);
+  }
+  .algo-card summary::-webkit-details-marker { display: none; }
+  .algo-card summary::marker { display: none; }
+
+  /* Summary */
+  .algo-summary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .algo-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-muted);
+  }
+  .algo-title {
+    flex: 1;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .algo-title { font-size: 1.05rem; }
+  }
+  .algo-plus {
+    font-family: var(--font-mono);
+    font-size: 1.25rem;
+    color: var(--color-accent);
+    transition: transform 0.2s ease;
+  }
+  .algo-card[open] .algo-plus { transform: rotate(45deg); }
+
+  /* Body */
+  .algo-body {
+    border-top: 1px solid var(--color-border-default);
+    padding: 1.5rem 1.25rem;
+  }
+  .algo-lead {
+    margin: 0 0 1rem 0;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+  }
+  .hl {
+    color: var(--color-text-primary);
+    font-weight: 500;
+  }
+  .hl-yss {
+    color: var(--color-route-yss);
+    font-weight: 500;
+  }
+
+  /* Table */
+  .algo-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--color-border-default);
+    border-radius: 0.5rem;
+  }
+  .algo-table {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    border-collapse: collapse;
+  }
+  .algo-table th {
+    text-align: left;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--color-border-default);
+    background: var(--color-bg-muted);
+  }
+  .algo-table th.num,
+  .algo-table td.num {
+    text-align: right;
+  }
+  .algo-table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(38, 38, 38, 0.5);
+    color: var(--color-text-secondary);
+  }
+  .algo-table tr:last-child td {
+    border-bottom: none;
+  }
+  .algo-table td.hl {
+    color: var(--color-text-primary);
+  }
+  .algo-table td.muted {
+    color: var(--color-text-muted);
+  }
+
+  /* Badge */
+  .badge {
+    display: inline-block;
+    padding: 1px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+  }
+  .badge-fsm {
+    background: rgba(220, 38, 38, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(220, 38, 38, 0.35);
+  }
+  .badge-yss {
+    background: rgba(22, 163, 74, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(22, 163, 74, 0.35);
+  }
+
+  /* Callout */
+  .algo-callout {
+    margin-top: 1rem;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--color-border-default);
+    background: var(--color-bg-muted);
+    border-radius: 0.375rem;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+  }
+  .algo-callout.accent {
+    border-color: rgba(99, 102, 241, 0.3);
+    background: var(--color-accent-soft);
+    color: var(--color-text-primary);
+  }
+  .algo-callout code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-text-primary);
+  }
+  .callout-arrow {
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+  }
+
+  /* Case rows */
+  .case-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .case-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    background: var(--color-bg-muted);
+    border: 1px solid var(--color-border-default);
+    flex-wrap: wrap;
+  }
+  .case-num {
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    font-size: 11px;
+  }
+  .case-route {
+    color: var(--color-text-primary);
+    font-weight: 500;
+    flex: 1;
+    font-size: 12px;
+  }
+  .case-chain {
+    font-family: var(--font-mono);
+    color: var(--color-accent);
+    font-size: 11px;
+  }
+
+  /* Formula card */
+  .formula-card {
+    padding: 1rem;
+    background: var(--color-bg-muted);
+    border: 1px solid var(--color-border-default);
+    border-radius: 0.5rem;
+  }
+  .formula-eyebrow {
+    margin-bottom: 0.5rem;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .formula-code {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+    white-space: pre-wrap;
+  }
+  .formula-note {
+    margin-top: 0.75rem;
+    font-size: 11px;
+    color: var(--color-text-muted);
+  }
+</style>
