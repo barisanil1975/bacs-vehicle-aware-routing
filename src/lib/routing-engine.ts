@@ -482,3 +482,15 @@ export function analyzeRoute(
     corridor: corridor ? corridor.id : null,
   };
 }
+it('routes European Istanbul to İzmir with heavy vehicle through YSS + Osmangazi', () => {
+  const analysis = analyzeRoute('Maslak', 'İzmir', 'TIR 22-26t');
+
+  expect(analysis.profile.requiredBridges).toContain('yss');
+  expect(analysis.profile.requiredBridges).toContain('osmangazi');
+  expect(analysis.waypoints.map((w) => w.bridgeId)).toEqual(['yss', 'osmangazi']);
+});
+it('recognizes Mahmutbey as European Istanbul for heavy vehicle routes to Bursa', () => {
+  const analysis = analyzeRoute('Mahmutbey, İstanbul', 'Bursa', 'TIR 22-26t');
+
+  expect(analysis.waypoints.map((w) => w.bridgeId)).toEqual(['yss', 'osmangazi']);
+});
