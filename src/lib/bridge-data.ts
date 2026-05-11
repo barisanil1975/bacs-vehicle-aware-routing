@@ -151,7 +151,20 @@ export const AVRUPA_IST = [
   'beylikdüzü', 'esenyurt', 'büyükçekmece', 'silivri', 'çatalca', 'bakırköy',
   'zeytinburnu', 'fatih', 'bayrampaşa', 'eyüp', 'başakşehir', 'küçükçekmece',
   'avcılar', 'arnavutköy', 'sultangazi', 'gaziosmanpaşa', 'kağıthane',
-  'beyoğlu', 'şişli', 'sarıyer', 'beşiktaş', 'hadımköy',
+  'beyoğlu', 'şişli', 'sarıyer', 'beşiktaş', 'hadımköy','maslak',
+'levent',
+'etiler',
+'ayazağa',
+'istinye',
+'zekeriyaköy',
+'tarabya',
+'kağıthane',
+'seyrantepe',
+'sanayi mahallesi',
+'mahmutbey',
+'ikitelli',
+'güneşli',
+'bağcılar'
 ];
 
 /** Anadolu geneli — long-haul tespit için */
