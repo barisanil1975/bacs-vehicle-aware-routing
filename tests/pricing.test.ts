@@ -75,6 +75,26 @@ describe('getFuelEstimateForVehicle', () => {
       expect(getFuelEstimateForVehicle(v, 100, 78.6)).toBeGreaterThan(0);
     }
   });
+
+  it('non-finite km values → 0', () => {
+    expect(getFuelEstimateForVehicle('TIR 22-26t', NaN, 78.6)).toBe(0);
+    expect(getFuelEstimateForVehicle('TIR 22-26t', Infinity, 78.6)).toBe(0);
+    expect(getFuelEstimateForVehicle('TIR 22-26t', -Infinity, 78.6)).toBe(0);
+  });
+
+  it('negative km → 0', () => {
+    expect(getFuelEstimateForVehicle('TIR 22-26t', -1, 78.6)).toBe(0);
+  });
+
+  it('non-finite fuelPriceTLperL values → 0', () => {
+    expect(getFuelEstimateForVehicle('TIR 22-26t', 240, NaN)).toBe(0);
+    expect(getFuelEstimateForVehicle('TIR 22-26t', 240, Infinity)).toBe(0);
+    expect(getFuelEstimateForVehicle('TIR 22-26t', 240, -Infinity)).toBe(0);
+  });
+
+  it('negative fuelPriceTLperL → 0', () => {
+    expect(getFuelEstimateForVehicle('TIR 22-26t', 240, -1)).toBe(0);
+  });
 });
 
 describe('getHgsEstimateForVehicle', () => {
