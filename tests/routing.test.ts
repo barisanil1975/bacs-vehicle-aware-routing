@@ -179,11 +179,8 @@ describe('analyzeRoute end-to-end', () => {
   it('Bursa → Edirne TIR: tam analiz', () => {
     const result = analyzeRoute('Bursa', 'Edirne', 'TIR 22-26t');
     expect(result.forcedBosphorus).toBe('yss');
-    // Plan profile YSS+Osmangazi (case 1: osmSouth → Avrupa); ama
-    // detectBridges öncelik sırasında Çanakkale yakaladığı için bridges → ['canakkale']
-    // Bu Megapol production davranışıyla aynı.
-    expect(result.bridges).toContain('canakkale');
-    expect(result.waypoints.length).toBeGreaterThanOrEqual(2);
+    expect(result.bridges).toEqual(['osmangazi', 'yss']);
+    expect(result.waypoints.map((w) => w.bridgeId)).toEqual(['osmangazi', 'yss']);
   });
 
   it('Bakırköy → Kadıköy Minivan: FSM tercihi', () => {
@@ -198,5 +195,31 @@ describe('analyzeRoute end-to-end', () => {
     // Asıl kontrol: bridges'de yss var (Avrupa → Anadolu yok aslında, Edirne Trakya)
     // Beklenen: tek YSS waypoint (transit Boğaz değil — Trakya içi)
     expect(result.profile.reason).toBeTruthy();
+  });
+
+  it('Maslak → İzmir TIR: YSS + Osmangazi zinciri downstream analize taşınır', () => {
+    const analysis = analyzeRoute('Maslak', 'İzmir', 'TIR 22-26t');
+
+    expect(analysis.profile.requiredBridges).toEqual(['yss', 'osmangazi']);
+    expect(analysis.bridges).toEqual(['yss', 'osmangazi']);
+    expect(analysis.waypoints.map((w) => w.bridgeId)).toEqual([
+      'yss',
+      'osmangazi',
+    ]);
+  });
+
+  it('Mahmutbey → Bursa TIR: YSS + Osmangazi zinciri downstream analize taşınır', () => {
+    const analysis = analyzeRoute(
+      'Mahmutbey, İstanbul',
+      'Bursa',
+      'TIR 22-26t'
+    );
+
+    expect(analysis.profile.requiredBridges).toEqual(['yss', 'osmangazi']);
+    expect(analysis.bridges).toEqual(['yss', 'osmangazi']);
+    expect(analysis.waypoints.map((w) => w.bridgeId)).toEqual([
+      'yss',
+      'osmangazi',
+    ]);
   });
 });
