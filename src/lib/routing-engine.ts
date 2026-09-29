@@ -464,14 +464,24 @@ export function analyzeRoute(
     fromText,
     toText
   );
-  const bridges = detectBridges(fromText, toText);
-  // Boğaz tespit edildiyse, Boğaz köprüsünü araç sınıfına göre değiştir
-  const bridgesNormalized = bridges.map((b) => {
-    if (b === 'yss' && VEHICLE_BRIDGE_CLASS[vehicle] === 'fsm') {
-      return 'fsm' as BridgeId;
-    }
-    return b;
-  });
+  const detectedBridges = detectBridges(fromText, toText);
+  // Route profile bir köprü zincirini zorunlu kılıyorsa bu plan downstream
+  // analysis/pricing/presentation için canonical route chain olur.
+  // Profile boşsa mevcut heuristik tespit davranışı korunur.
+  const plannedBridges =
+    profile.requiredBridges.length > 0
+      ? profile.requiredBridges
+      : detectedBridges;
+
+  // Boğaz köprüsünü araç sınıfına göre normalize et ve sıra korunarak tekilleştir.
+  const bridgesNormalized = plannedBridges
+    .map((b) => {
+      if (b === 'yss' && VEHICLE_BRIDGE_CLASS[vehicle] === 'fsm') {
+        return forcedBosphorus;
+      }
+      return b;
+    })
+    .filter((b, index, arr) => arr.indexOf(b) === index);
   const corridor = detectOfficialKgmCorridor(fromText, toText);
 
   return {
@@ -482,15 +492,3 @@ export function analyzeRoute(
     corridor: corridor ? corridor.id : null,
   };
 }
-it('routes European Istanbul to İzmir with heavy vehicle through YSS + Osmangazi', () => {
-  const analysis = analyzeRoute('Maslak', 'İzmir', 'TIR 22-26t');
-
-  expect(analysis.profile.requiredBridges).toContain('yss');
-  expect(analysis.profile.requiredBridges).toContain('osmangazi');
-  expect(analysis.waypoints.map((w) => w.bridgeId)).toEqual(['yss', 'osmangazi']);
-});
-it('recognizes Mahmutbey as European Istanbul for heavy vehicle routes to Bursa', () => {
-  const analysis = analyzeRoute('Mahmutbey, İstanbul', 'Bursa', 'TIR 22-26t');
-
-  expect(analysis.waypoints.map((w) => w.bridgeId)).toEqual(['yss', 'osmangazi']);
-});
