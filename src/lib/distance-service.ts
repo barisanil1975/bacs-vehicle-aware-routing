@@ -60,21 +60,38 @@ export async function geocodeAddress(
     });
     if (!res.ok) return null;
 
-    const data = (await res.json()) as Array<{
-      lat: string;
-      lon: string;
-      display_name: string;
-    }>;
+    const data = (await res.json()) as unknown;
+    if (!Array.isArray(data) || data.length === 0) return null;
 
-    if (!data || data.length === 0) return null;
-    const first = data[0]!;
+    const first = data[0];
+    if (!first || typeof first !== 'object') return null;
+
+    const record = first as Record<string, unknown>;
+    if (
+      typeof record.lat !== 'string' ||
+      typeof record.lon !== 'string' ||
+      typeof record.display_name !== 'string' ||
+      record.display_name.trim().length === 0
+    ) {
+      return null;
+    }
+
+    const lat = Number.parseFloat(record.lat);
+    const lng = Number.parseFloat(record.lon);
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng) ||
+      lat < -90 ||
+      lat > 90 ||
+      lng < -180 ||
+      lng > 180
+    ) {
+      return null;
+    }
 
     return {
-      display: first.display_name,
-      location: {
-        lat: parseFloat(first.lat),
-        lng: parseFloat(first.lon),
-      },
+      display: record.display_name,
+      location: { lat, lng },
     };
   } catch (err) {
     console.error('[geocode] failed:', err);
@@ -116,29 +133,62 @@ export async function getRoute(
     const res = await fetch(url.toString());
     if (!res.ok) return null;
 
-    const data = (await res.json()) as {
-      code: string;
-      routes?: Array<{
-        distance: number; // meters
-        duration: number; // seconds
-        geometry: { coordinates: [number, number][] }; // [lng, lat][]
-      }>;
-    };
+    const data = (await res.json()) as unknown;
+    if (!data || typeof data !== 'object') return null;
 
-    if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) {
+    const record = data as Record<string, unknown>;
+    if (record.code !== 'Ok' || !Array.isArray(record.routes) || record.routes.length === 0) {
       return null;
     }
 
-    const route = data.routes[0]!;
-    // GeoJSON koordinatları [lng, lat] — Leaflet [lat, lng] istiyor
-    const coordinates: [number, number][] = route.geometry.coordinates.map(
-      ([lng, lat]) => [lat, lng]
-    );
+    const firstRoute = record.routes[0];
+    if (!firstRoute || typeof firstRoute !== 'object') return null;
+
+    const route = firstRoute as Record<string, unknown>;
+    const distance = route.distance;
+    const duration = route.duration;
+    const geometry = route.geometry;
+
+    if (
+      typeof distance !== 'number' ||
+      !Number.isFinite(distance) ||
+      distance < 0 ||
+      typeof duration !== 'number' ||
+      !Number.isFinite(duration) ||
+      duration < 0 ||
+      !geometry ||
+      typeof geometry !== 'object'
+    ) {
+      return null;
+    }
+
+    const rawCoordinates = (geometry as Record<string, unknown>).coordinates;
+    if (!Array.isArray(rawCoordinates) || rawCoordinates.length < 2) return null;
+
+    const coordinates: [number, number][] = [];
+    for (const pair of rawCoordinates) {
+      if (
+        !Array.isArray(pair) ||
+        pair.length < 2 ||
+        typeof pair[0] !== 'number' ||
+        typeof pair[1] !== 'number' ||
+        !Number.isFinite(pair[0]) ||
+        !Number.isFinite(pair[1]) ||
+        pair[0] < -180 ||
+        pair[0] > 180 ||
+        pair[1] < -90 ||
+        pair[1] > 90
+      ) {
+        return null;
+      }
+      // GeoJSON koordinatları [lng, lat] — Leaflet [lat, lng] istiyor.
+      coordinates.push([pair[1], pair[0]]);
+    }
 
     return {
       coordinates,
-      distanceKm: route.distance / 1000,
-      durationMin: route.duration / 60,
+      distanceKm: distance / 1000,
+      durationMin: duration / 60,
     };
   } catch (err) {
     console.error('[osrm] failed:', err);
