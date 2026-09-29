@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "receipt_id": "BENCHMARK-NONBMAD-002B-OSRM-20260929",
+  "benchmark_pair": "MATCHED_PAIR_002",
+  "benchmark_role": "NON_BMAD_CONTROL",
+  "repository": "barisanil1975/bacs-vehicle-aware-routing",
+  "task": "getRoute malformed OSRM payload validation",
+  "data_class": "PUBLIC",
+  "execution_lane": "L2",
+  "approval_scope_id": "APV-BACS-NONBMAD-CONTROL-OSRM-20260929-001",
+  "base_main_sha": "aca7c16b9abee3453de1894258e26a25ae819cdb",
+  "implementation_head_sha": "f48fc72daf0dbe6029ddbd8a298adec626bae29c",
+  "implementation_tree": "14525b05d521ae079133b8fa9f35b11b0e31b0ad",
+  "implementation_ci_run": 36558616835,
+  "evidence": {
+    "tests": "PASS_52",
+    "distance_service_tests": "PASS_5",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "corrective_implementation_cycles": 0,
+    "human_interruptions": 0,
+    "external_network_calls_in_tests": 0
+  },
+  "telemetry": {
+    "normalized_input_tokens": null,
+    "normalized_output_tokens": null,
+    "cached_input_tokens": null,
+    "normalized_agent_call_count": null,
+    "github_observable_proxy_ms": 84000,
+    "proxy_window": "PR created 2026-09-29T10:55:23Z to implementation CI completion 2026-09-29T10:56:47Z",
+    "note": "Current ChatGPT→GitHub connector execution did not traverse gatewayResponseRequest(); token/agent telemetry is intentionally null."
+  },
+  "method": {
+    "bmad_used": false,
+    "bmad_artifacts_used": false,
+    "deterministic_verification": true
+  },
+  "production_merge_authorized": false,
+  "gate": "PASS_CANDIDATE_ONLY"
+}
