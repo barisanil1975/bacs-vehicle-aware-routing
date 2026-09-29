@@ -107,7 +107,9 @@ export function getFuelEstimateForVehicle(
   fuelPriceTLperL: number
 ): number {
   const d = FUEL_DATA[vehicle];
-  if (!d || km <= 0 || !fuelPriceTLperL) return 0;
+  if (!d) return 0;
+  if (!Number.isFinite(km) || km <= 0) return 0;
+  if (!Number.isFinite(fuelPriceTLperL) || fuelPriceTLperL <= 0) return 0;
   const avgConsumption = (d.bosMin + d.yukluMax) / 2;
   const liters = (km * avgConsumption) / 100;
   return liters * fuelPriceTLperL;
