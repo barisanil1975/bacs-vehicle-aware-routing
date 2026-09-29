@@ -95,6 +95,7 @@ export function RouteMap({
     (async () => {
       const L = await import('leaflet');
       const map = mapInstanceRef.current;
+      if (!map) return;
 
       // Clear previous layers
       for (const layer of layersRef.current) {
