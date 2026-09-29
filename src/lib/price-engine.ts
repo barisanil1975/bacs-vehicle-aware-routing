@@ -17,7 +17,6 @@ import type {
   BridgeId,
   FuelProfile,
   HgsBreakdown,
-  KgmClass,
   PriceSuggestion,
   PriceSuggestionModel,
   QuoteRequest,
