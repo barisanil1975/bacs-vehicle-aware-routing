@@ -16,6 +16,7 @@ import {
   DEFAULT_FUEL_PRICE_TL_PER_LITER,
   FUEL_DATA,
   getFuelEstimateForVehicle,
+  getHgsBreakdownForVehicle,
   getHgsEstimateForVehicle,
   getPriceSuggestionForVehicle,
   PRICE_SUGGESTION_DATA,
@@ -112,6 +113,45 @@ describe('getHgsEstimateForVehicle', () => {
     // Toll km ≈ 260 × 0.65 = 169, × 2.15 ≈ 363
     expect(cost).toBeGreaterThan(200);
     expect(cost).toBeLessThan(500);
+  });
+});
+
+describe('getHgsBreakdownForVehicle', () => {
+  it('Maslak → İzmir TIR: YSS + Osmangazi ayrı köprü kalemleri', () => {
+    const breakdown = getHgsBreakdownForVehicle(
+      'TIR 22-26t',
+      480,
+      'Maslak',
+      'İzmir'
+    );
+
+    expect(breakdown.bridges.map((line) => line.bridgeId)).toEqual([
+      'yss',
+      'osmangazi',
+    ]);
+    expect(breakdown.bridges.map((line) => line.cost)).toEqual([740, 3165]);
+    expect(breakdown.bridgeCost).toBe(3905);
+    expect(breakdown.highwayCost).toBeGreaterThan(0);
+    expect(breakdown.total).toBe(
+      breakdown.highwayCost + breakdown.bridgeCost
+    );
+  });
+
+  it('Mahmutbey → Bursa TIR: otoyol/KGM ve köprü toplamları ayrışır', () => {
+    const breakdown = getHgsBreakdownForVehicle(
+      'TIR 22-26t',
+      240,
+      'Mahmutbey, İstanbul',
+      'Bursa'
+    );
+
+    expect(breakdown.bridges.map((line) => line.bridgeId)).toEqual([
+      'yss',
+      'osmangazi',
+    ]);
+    expect(breakdown.bridgeCost).toBe(3905);
+    expect(breakdown.highwayCost).toBeGreaterThan(0);
+    expect(breakdown.total).toBeGreaterThan(breakdown.bridgeCost);
   });
 });
 
