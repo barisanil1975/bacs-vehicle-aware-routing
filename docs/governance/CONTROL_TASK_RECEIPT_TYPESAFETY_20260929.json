@@ -1,0 +1,50 @@
+{
+  "version": "1.0",
+  "receipt_id": "CONTROL-TASK-001-BACS-TYPESAFETY-20260929",
+  "benchmark_role": "NON_BMAD_CONTROL_TASK",
+  "repository": "barisanil1975/bacs-vehicle-aware-routing",
+  "data_class": "PUBLIC",
+  "execution_lane": "L2",
+  "approval_scope_id": "APV-BACS-NONBMAD-CONTROL-TYPESAFETY-20260929-001",
+  "base_main_sha": "c0de8a57f3c45dc85380eb1717f20b5da731015a",
+  "baseline_head_sha": "a4997caddb02d976bd2a0428ba0eac934373a23c",
+  "baseline_ci_run": 36556688204,
+  "first_implementation_head_sha": "71bc4c89d293815b503ad2278d1d9772797c503e",
+  "first_implementation_ci_run": 36556827874,
+  "corrected_head_sha": "73e1e6a47c3dadd3913fe5d13f1f78db7e1a9ec5",
+  "corrected_tree": "91c40d2fa6d7bc948b7338b06086babfc29d8248",
+  "corrected_ci_run": 36556948630,
+  "changes": [
+    "Add npm run typecheck to deterministic CI.",
+    "Remove unnecessary corridor as-any cast.",
+    "Replace Leaflet unknown/any refs with Map/Layer types.",
+    "Add explicit in-effect non-null narrowing for the Leaflet map.",
+    "Remove now-unused KgmClass import."
+  ],
+  "evidence": {
+    "baseline_tests": "PASS",
+    "baseline_typecheck": "PASS",
+    "baseline_build": "PASS",
+    "first_implementation_tests": "PASS",
+    "first_implementation_typecheck": "FAIL_MAP_POSSIBLY_NULL",
+    "corrected_tests": "PASS",
+    "corrected_typecheck": "PASS",
+    "corrected_build": "PASS"
+  },
+  "kpi_observations": {
+    "normalized_tokens_per_accepted_task": null,
+    "normalized_agent_calls_per_accepted_task": null,
+    "human_interruptions_per_run": 0,
+    "corrective_runs_per_accepted_task": 1,
+    "canonical_intent_to_verified_candidate_ms": null,
+    "github_observable_proxy_ms": 204000,
+    "proxy_window": "PR created 2026-09-29T10:37:12Z to corrected CI completion 2026-09-29T10:40:36Z"
+  },
+  "comparison_note": "Same repository and L2/non-Production discipline, but the control task is a smaller type-safety hardening task rather than an equivalent functional routing/pricing bug. It is evidence, not a winner-selection basis.",
+  "bmad_artifacts_used": false,
+  "bmad_method_used": false,
+  "production_or_cloudflare_mutation": false,
+  "authority_boundary_violations": 0,
+  "secret_leak_events": 0,
+  "gate": "PASS_PENDING_FINAL_RECEIPT_HEAD_CI"
+}

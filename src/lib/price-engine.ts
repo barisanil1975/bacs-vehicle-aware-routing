@@ -17,7 +17,6 @@ import type {
   BridgeId,
   FuelProfile,
   HgsBreakdown,
-  KgmClass,
   PriceSuggestion,
   PriceSuggestionModel,
   QuoteRequest,
@@ -280,7 +279,7 @@ export function computeQuote(req: QuoteRequest): QuoteResponse {
     request: req,
     analysis: {
       bridges: analysis.bridges,
-      corridor: analysis.corridor as any,
+      corridor: analysis.corridor,
       profile: analysis.profile,
       waypoints: analysis.waypoints,
     },

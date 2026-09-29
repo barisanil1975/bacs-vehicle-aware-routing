@@ -9,6 +9,7 @@
  */
 
 import { useEffect, useRef } from 'react';
+import type { Layer as LeafletLayer, Map as LeafletMap } from 'leaflet';
 import type { LatLng, Waypoint, BridgeId } from '../lib/types';
 import type { RouteGeometry } from '../lib/distance-service';
 import { bridgeShortName } from '../lib/bridge-data';
@@ -43,8 +44,8 @@ export function RouteMap({
   defaultZoom = DEFAULT_ZOOM,
 }: RouteMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<unknown>(null);
-  const layersRef = useRef<unknown[]>([]);
+  const mapInstanceRef = useRef<LeafletMap | null>(null);
+  const layersRef = useRef<LeafletLayer[]>([]);
 
   // Map initialization (one-time)
   useEffect(() => {
@@ -81,8 +82,7 @@ export function RouteMap({
     return () => {
       cancelled = true;
       if (mapInstanceRef.current) {
-        // @ts-expect-error — Leaflet Map.remove dinamik tipte
-        mapInstanceRef.current.remove?.();
+        mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
@@ -94,7 +94,8 @@ export function RouteMap({
 
     (async () => {
       const L = await import('leaflet');
-      const map = mapInstanceRef.current as any;
+      const map = mapInstanceRef.current;
+      if (!map) return;
 
       // Clear previous layers
       for (const layer of layersRef.current) {

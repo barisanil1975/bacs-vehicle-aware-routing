@@ -1,0 +1,39 @@
+version: '1.0'
+approval_scope_id: APV-BACS-NONBMAD-CONTROL-TYPESAFETY-20260929-001
+status: GRANTED_REPO_ONLY
+approval_authority: BARIS_ANIL
+approval_source: USER_CONTINUE_2026-09-29
+repository: barisanil1975/bacs-vehicle-aware-routing
+base_main_sha: c0de8a57f3c45dc85380eb1717f20b5da731015a
+benchmark_role: NON_BMAD_CONTROL_TASK
+data_class: PUBLIC
+risk_lane: L2
+production_target: false
+purpose: >
+  Run a comparable non-BMAD L2 control task in the same repository:
+  add strict typecheck to deterministic CI and remove unnecessary unsafe casts
+  without changing routing/pricing behavior.
+allowed_files:
+  - .github/workflows/ci.yml
+  - docs/governance/APV_BACS_NONBMAD_CONTROL_TYPESAFETY_20260929.yaml
+  - docs/governance/CONTROL_TASK_RECEIPT_TYPESAFETY_20260929.json
+  - src/lib/price-engine.ts
+  - src/components/RouteMap.tsx
+allowed_actions:
+  - create control branch
+  - add npm run typecheck to CI
+  - remove unnecessary unsafe casts in the allowlisted files
+  - open pull request
+  - merge exact head only after tests, typecheck and build PASS plus fresh readback
+not_authorized:
+  - BMAD project-context/spec/build/retrospective artifacts
+  - external API changes
+  - routing/pricing behavior changes
+  - Production or Cloudflare mutation
+  - issue close
+  - release or publish
+  - credential or secret handling
+  - unrelated refactor
+drift_rule: >
+  Main/head drift, file outside allowlist, behavior-scope expansion or required
+  CI failure returns the gate to HOLD.
