@@ -1,0 +1,40 @@
+version: '1.0'
+approval_scope_id: APV-BACS-BMAD-PILOT-GEOCODE-20260929-001
+status: GRANTED_CANDIDATE_ONLY
+approval_authority: BARIS_ANIL
+approval_source: USER_CONTINUE_2026-09-29
+repository: barisanil1975/bacs-vehicle-aware-routing
+base_main_sha: aca7c16b9abee3453de1894258e26a25ae819cdb
+benchmark_pair: MATCHED_PAIR_002
+benchmark_role: BMAD_PILOT
+data_class: PUBLIC
+risk_lane: L2
+production_target: false
+purpose: >
+  Harden geocodeAddress() against malformed Nominatim payloads using mocked
+  deterministic tests while preserving valid-request behavior.
+allowed_files:
+  - docs/governance/APV_BACS_BMAD_PILOT_GEOCODE_20260929.yaml
+  - docs/bmad/project-context-audit-geocode.md
+  - docs/bmad/spec-geocode-validation.md
+  - docs/bmad/retrospective-geocode-validation.md
+  - docs/governance/BENCHMARK_RECEIPT_BMAD_GEOCODE_20260929.json
+  - src/lib/distance-service.ts
+  - tests/distance-service.test.ts
+allowed_actions:
+  - create benchmark branch
+  - add BMAD project-context audit/spec/retrospective artifacts
+  - implement minimum safe validation patch
+  - add mocked deterministic tests
+  - open pull request
+not_authorized:
+  - merge to main
+  - Production or Cloudflare deployment
+  - external network call in tests
+  - Issue #2 implementation
+  - public API signature change
+  - credential or secret handling
+  - unrelated refactor
+drift_rule: >
+  Base/head drift, file outside allowlist, external-call requirement or scope
+  expansion returns the gate to HOLD.
