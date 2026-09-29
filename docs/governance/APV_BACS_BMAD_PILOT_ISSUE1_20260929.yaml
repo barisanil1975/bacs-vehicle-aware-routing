@@ -1,0 +1,48 @@
+version: '1.0'
+approval_scope_id: APV-BACS-BMAD-PILOT-ISSUE1-20260929-001
+status: GRANTED_REPO_ONLY
+approval_authority: BARIS_ANIL
+approval_source: USER_CONTINUE_2026-09-29
+repository: barisanil1975/bacs-vehicle-aware-routing
+base_main_sha: 2e69df66f54f366a685d7922c48cdb597e6f999b
+issue: 1
+data_class: PUBLIC
+risk_lane: L2
+production_target: false
+purpose: >
+  Run the first bounded BMAD benchmark pilot on Issue #1:
+  preserve the planned YSS + Osmangazi bridge chain in analysis, pricing,
+  and presentation for heavy-vehicle European Istanbul routes to
+  South Marmara/Aegean destinations.
+allowed_files:
+  - .github/workflows/ci.yml
+  - docs/bmad/project-context-audit-issue-1.md
+  - docs/bmad/spec-issue-1-bridge-chain.md
+  - docs/bmad/retrospective-issue-1.md
+  - docs/governance/APV_BACS_BMAD_PILOT_ISSUE1_20260929.yaml
+  - src/lib/routing-engine.ts
+  - src/lib/price-engine.ts
+  - src/lib/types.ts
+  - src/components/ResultPanel.tsx
+  - tests/routing.test.ts
+  - tests/pricing.test.ts
+allowed_actions:
+  - create pilot branch
+  - add deterministic CI
+  - add BMAD project-context audit/spec/retrospective artifacts
+  - implement minimum safe patch
+  - add regression tests
+  - open pull request
+  - merge only after exact-head CI PASS and fresh base/head readback
+not_authorized:
+  - Production deployment
+  - Cloudflare mutation
+  - external API integration
+  - issue close
+  - release or publish
+  - credential or secret handling
+  - unrelated refactor
+  - Issue #2 or Issue #3 implementation
+drift_rule: >
+  Any live-main change before merge, file outside the allowlist, candidate-head
+  change after CI evidence, or acceptance-scope expansion returns the gate to HOLD.
