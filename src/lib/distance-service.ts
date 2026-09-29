@@ -60,21 +60,38 @@ export async function geocodeAddress(
     });
     if (!res.ok) return null;
 
-    const data = (await res.json()) as Array<{
-      lat: string;
-      lon: string;
-      display_name: string;
-    }>;
+    const data = (await res.json()) as unknown;
+    if (!Array.isArray(data) || data.length === 0) return null;
 
-    if (!data || data.length === 0) return null;
-    const first = data[0]!;
+    const first = data[0];
+    if (!first || typeof first !== 'object') return null;
+
+    const record = first as Record<string, unknown>;
+    if (
+      typeof record.lat !== 'string' ||
+      typeof record.lon !== 'string' ||
+      typeof record.display_name !== 'string' ||
+      record.display_name.trim().length === 0
+    ) {
+      return null;
+    }
+
+    const lat = Number.parseFloat(record.lat);
+    const lng = Number.parseFloat(record.lon);
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng) ||
+      lat < -90 ||
+      lat > 90 ||
+      lng < -180 ||
+      lng > 180
+    ) {
+      return null;
+    }
 
     return {
-      display: first.display_name,
-      location: {
-        lat: parseFloat(first.lat),
-        lng: parseFloat(first.lon),
-      },
+      display: record.display_name,
+      location: { lat, lng },
     };
   } catch (err) {
     console.error('[geocode] failed:', err);
