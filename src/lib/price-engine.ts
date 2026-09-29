@@ -16,6 +16,7 @@ import {
 import type {
   BridgeId,
   FuelProfile,
+  HgsBreakdown,
   KgmClass,
   PriceSuggestion,
   PriceSuggestionModel,
@@ -29,7 +30,7 @@ import {
   HGS_DATA,
   OTOYOL_RATIO,
 } from './kgm-tariff';
-import { analyzeRoute, detectBridges } from './routing-engine';
+import { analyzeRoute } from './routing-engine';
 
 /* ────────────────────────────────────────────────────────────
    1) Yakıt tüketim profilleri
@@ -126,6 +127,54 @@ export function getFuelEstimateForVehicle(
  * @param toText — varış metni
  * @param tollKmHint — varsa kullanıcının verdiği "ücretli km" — yoksa toplamın %65'i
  */
+export function getHgsBreakdownForVehicle(
+  vehicle: VehicleId,
+  totalKm: number,
+  fromText: string,
+  toText: string,
+  tollKmHint?: number
+): HgsBreakdown {
+  const h = HGS_DATA[vehicle];
+  if (!h || totalKm <= 0) {
+    return { highwayCost: 0, bridgeCost: 0, bridges: [], total: 0 };
+  }
+
+  const tollKm = tollKmHint ?? totalKm * OTOYOL_RATIO;
+
+  // 1) Otoyol — resmi koridor tespiti, bulunamazsa sınıf bazlı fallback.
+  const corridor = detectOfficialKgmCorridor(fromText, toText);
+  const officialCost = getOfficialCorridorCost(corridor, h.sinif, tollKm);
+  const fallbackCost = tollKm * h.perKm;
+  const highwayCost = officialCost > 0 ? officialCost : fallbackCost;
+
+  // 2) Köprü — detectBridges yerine resolved route analysis kullanılır.
+  // Böylece profile.requiredBridges ile planlanan YSS + Osmangazi zinciri kaybolmaz.
+  const analysis = analyzeRoute(fromText, toText, vehicle);
+  const bridgeLines: HgsBreakdown['bridges'] = [];
+
+  for (const bridgeId of analysis.bridges) {
+    let actualBridge: BridgeId = bridgeId;
+    if (bridgeId === 'yss' || bridgeId === 'fsm') {
+      const cls = VEHICLE_BRIDGE_CLASS[vehicle];
+      actualBridge =
+        cls === 'fsm' ? getBosphorusBridgeForKgmClass(h.sinif) : 'yss';
+    }
+
+    const def = BRIDGE_DEFS[actualBridge];
+    const cost = def?.rates[h.sinif] ?? 0;
+    bridgeLines.push({ bridgeId: actualBridge, cost });
+  }
+
+  const bridgeCost = bridgeLines.reduce((sum, line) => sum + line.cost, 0);
+
+  return {
+    highwayCost,
+    bridgeCost,
+    bridges: bridgeLines,
+    total: highwayCost + bridgeCost,
+  };
+}
+
 export function getHgsEstimateForVehicle(
   vehicle: VehicleId,
   totalKm: number,
@@ -133,36 +182,13 @@ export function getHgsEstimateForVehicle(
   toText: string,
   tollKmHint?: number
 ): number {
-  const h = HGS_DATA[vehicle];
-  if (!h || totalKm <= 0) return 0;
-
-  const tollKm = tollKmHint ?? totalKm * OTOYOL_RATIO;
-
-  // 1) Otoyol — resmi koridor tespiti
-  const corridor = detectOfficialKgmCorridor(fromText, toText);
-  const officialCost = getOfficialCorridorCost(corridor, h.sinif, tollKm);
-  const fallbackCost = tollKm * h.perKm;
-  const otoyolCost = officialCost > 0 ? officialCost : fallbackCost;
-
-  // 2) Köprü — tespit edilen köprüler için sınıf bazlı ücret
-  const bridges = detectBridges(fromText, toText);
-  let bridgeCost = 0;
-
-  for (const bridgeId of bridges) {
-    // Boğaz köprüsü — araç sınıfına göre seç
-    let actualBridge: BridgeId = bridgeId;
-    if (bridgeId === 'yss' || bridgeId === 'fsm') {
-      // Araç sınıfı 1.-2. ise FSM tercih (yss zorunlu değilse)
-      const cls = VEHICLE_BRIDGE_CLASS[vehicle];
-      actualBridge =
-        cls === 'fsm' ? getBosphorusBridgeForKgmClass(h.sinif) : 'yss';
-    }
-    const def = BRIDGE_DEFS[actualBridge];
-    const rate = def?.rates[h.sinif] ?? 0;
-    bridgeCost += rate;
-  }
-
-  return otoyolCost + bridgeCost;
+  return getHgsBreakdownForVehicle(
+    vehicle,
+    totalKm,
+    fromText,
+    toText,
+    tollKmHint
+  ).total;
 }
 
 /* ────────────────────────────────────────────────────────────
@@ -192,7 +218,13 @@ export function getPriceSuggestionForVehicle(
   if (!model || km <= 0 || !fuelPriceTLperL) return null;
 
   const fuelCost = getFuelEstimateForVehicle(vehicle, km, fuelPriceTLperL);
-  const hgsCost = getHgsEstimateForVehicle(vehicle, km, fromText, toText);
+  const hgsBreakdown = getHgsBreakdownForVehicle(
+    vehicle,
+    km,
+    fromText,
+    toText
+  );
+  const hgsCost = hgsBreakdown.total;
 
   const akaryakitQuote = fuelCost / model.fuelShare;
   const escalasyonQuote = Math.max(km * model.escalationPerKm, model.minFloor);
@@ -208,6 +240,7 @@ export function getPriceSuggestionForVehicle(
     vehicle,
     fuelCost,
     hgsCost,
+    hgsBreakdown,
     akaryakitQuote,
     escalasyonQuote,
     lower: Math.min(lower, upper),
@@ -255,6 +288,12 @@ export function computeQuote(req: QuoteRequest): QuoteResponse {
       vehicle: req.vehicle,
       fuelCost: 0,
       hgsCost: 0,
+      hgsBreakdown: {
+        highwayCost: 0,
+        bridgeCost: 0,
+        bridges: [],
+        total: 0,
+      },
       akaryakitQuote: 0,
       escalasyonQuote: 0,
       lower: 0,
