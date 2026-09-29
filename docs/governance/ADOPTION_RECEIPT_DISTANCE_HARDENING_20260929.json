@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "receipt_id": "ADOPTION-DISTANCE-HARDENING-002-20260929",
+  "repository": "barisanil1975/bacs-vehicle-aware-routing",
+  "approval_scope_id": "APV-BACS-DISTANCE-HARDENING-ADOPTION-20260929-001",
+  "base_main_sha": "aca7c16b9abee3453de1894258e26a25ae819cdb",
+  "pre_receipt_head_sha": "b0f402dddc34632ab67b2202fa8877e0567bdd94",
+  "pre_receipt_tree": "6c39c97438067e902566626f74ff357fa8acf35d",
+  "source_candidates": {
+    "bmad_geocode_pr": 6,
+    "bmad_geocode_head": "e0f52c2313be882f5038622f92847a4c456faf29",
+    "non_bmad_osrm_pr": 7,
+    "non_bmad_osrm_head": "2e7a26717bc633cf9fe57dccadff4703640ad4fe"
+  },
+  "deterministic_ci": {
+    "run_id": 36560479864,
+    "tests": "PASS_57",
+    "distance_service_tests": "PASS_10",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "failed_steps": 0
+  },
+  "adoption": {
+    "geocode_validation": true,
+    "osrm_validation": true,
+    "public_api_signature_changed": false,
+    "external_network_calls_in_tests": 0,
+    "cloudflare_config_changed": false
+  },
+  "deployment_readback_required": true,
+  "gate": "PASS_PENDING_FINAL_RECEIPT_HEAD_CI_AND_FRESH_READBACK"
+}
