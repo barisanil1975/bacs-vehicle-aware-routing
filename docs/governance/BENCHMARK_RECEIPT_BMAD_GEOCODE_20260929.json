@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "receipt_id": "BENCHMARK-BMAD-002A-GEOCODE-20260929",
+  "benchmark_pair": "MATCHED_PAIR_002",
+  "benchmark_role": "BMAD_PILOT",
+  "repository": "barisanil1975/bacs-vehicle-aware-routing",
+  "task": "geocodeAddress malformed Nominatim payload validation",
+  "data_class": "PUBLIC",
+  "execution_lane": "L2",
+  "approval_scope_id": "APV-BACS-BMAD-PILOT-GEOCODE-20260929-001",
+  "base_main_sha": "aca7c16b9abee3453de1894258e26a25ae819cdb",
+  "implementation_head_sha": "8449109027b4287edd1df152b1a305877048067c",
+  "implementation_tree": "360fa45b45d1be178beb8af66419f425e88a3ebd",
+  "implementation_ci_run": 36558462829,
+  "evidence": {
+    "tests": "PASS_52",
+    "distance_service_tests": "PASS_5",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "corrective_implementation_cycles": 0,
+    "human_interruptions": 0,
+    "external_network_calls_in_tests": 0
+  },
+  "telemetry": {
+    "normalized_input_tokens": null,
+    "normalized_output_tokens": null,
+    "cached_input_tokens": null,
+    "normalized_agent_call_count": null,
+    "github_observable_proxy_ms": 74000,
+    "proxy_window": "PR created 2026-09-29T10:54:05Z to implementation CI completion 2026-09-29T10:55:19Z",
+    "note": "Current ChatGPT→GitHub connector execution did not traverse gatewayResponseRequest(); token/agent telemetry is intentionally null."
+  },
+  "method": {
+    "project_context": true,
+    "spec": true,
+    "build": true,
+    "retrospective": true
+  },
+  "production_merge_authorized": false,
+  "gate": "PASS_CANDIDATE_ONLY"
+}
