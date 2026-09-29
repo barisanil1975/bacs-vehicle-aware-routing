@@ -154,12 +154,30 @@ export interface RouteAnalysis {
   waypoints: Waypoint[];
 }
 
+export interface BridgeTollLine {
+  bridgeId: BridgeId;
+  cost: number;
+}
+
+export interface HgsBreakdown {
+  /** Otoyol / KGM kısmı (köprüler hariç) */
+  highwayCost: number;
+  /** Köprü ücretlerinin toplamı */
+  bridgeCost: number;
+  /** Rota sırasındaki ayrı köprü kalemleri */
+  bridges: BridgeTollLine[];
+  /** highwayCost + bridgeCost */
+  total: number;
+}
+
 export interface PriceSuggestion {
   vehicle: VehicleId;
   /** Akaryakıt tutarı (₺) */
   fuelCost: number;
   /** Köprü + otoyol toplamı (₺) */
   hgsCost: number;
+  /** Ayrıştırılmış otoyol/KGM + köprü kalemleri */
+  hgsBreakdown: HgsBreakdown;
   /** Akaryakıt-bazlı kapalı fiyat ipucu */
   akaryakitQuote: number;
   /** Eskalasyon-bazlı (km × ₺/km) kapalı fiyat ipucu */
