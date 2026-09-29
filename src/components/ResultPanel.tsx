@@ -67,7 +67,7 @@ export function ResultPanel({ quote, distanceKm }: ResultPanelProps) {
           sub={`${(price.fuelCost / distanceKm).toFixed(2)} ₺/km`}
         />
         <Card
-          eyebrow="KGM + Köprü"
+          eyebrow="Geçiş toplamı"
           value={formatTL(price.hgsCost)}
           sub={`${distanceKm > 0 ? (price.hgsCost / distanceKm).toFixed(2) : '0.00'} ₺/km`}
         />
@@ -85,6 +85,18 @@ export function ResultPanel({ quote, distanceKm }: ResultPanelProps) {
           Hesap mantığı
         </div>
         <ul className="space-y-1.5 text-sm text-[var(--color-text-secondary)]">
+          <li>
+            <span className="text-[var(--color-text-primary)]">Otoyol / KGM:</span>{' '}
+            {formatTL(price.hgsBreakdown.highwayCost)}
+          </li>
+          {price.hgsBreakdown.bridges.map((line) => (
+            <li key={line.bridgeId}>
+              <span className="text-[var(--color-text-primary)]">
+                {bridgeShortName(line.bridgeId)} Köprüsü:
+              </span>{' '}
+              {formatTL(line.cost)}
+            </li>
+          ))}
           <li>
             <span className="text-[var(--color-text-primary)]">Akaryakıt-bazlı ipucu:</span>{' '}
             {formatTL(price.akaryakitQuote)} (fuelShare ile geri çözüm)
